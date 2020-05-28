@@ -20,7 +20,6 @@
     [handler]
     (let [whitelisted? (get-whitelist)]
         (fn [req]
-            (log/debug req)
             (if-let [session (get-in req [:oauth2/access-tokens :msa])]
                 (if (-> session graph/validate whitelisted?)
                     (handler req)
