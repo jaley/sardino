@@ -1,13 +1,17 @@
-(ns sonos-proxy.util)
+(ns sonos-proxy.util
+    (:require [ring.util.json-response :refer [json-response]]
+              [ring.util.response      :as resp]))
 
 (defn forbidden
-    []
-    {:status 403
-     :headers {"Content-Type" "text/html; charset=utf-8"}
-     :body "Forbidden"})
+    "Returns a 403 Forbidden JSON respsonse"
+    [msg]
+    (-> {:reason msg}
+        json-response
+        (resp/status 403)))
 
 (defn unauthorized
-    []
-    {:status 401
-     :headers {"Content-Type" "text/html; charset=utf-8"}
-     :body "Unauthorized"})
+    "Returns a 401 Unauthorized JSON response"
+    [msg]
+    (-> {:reason msg}
+        json-response
+        (resp/status 401)))

@@ -4,9 +4,18 @@
               [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
               [ring.util.response       :as resp]
               [ring.util.json-response  :as json]
+              [cheshire.generate        :as gen]
               [taoensso.timbre          :as log]
               
-              [sonos-proxy.auth         :as auth]))
+              [sonos-proxy.auth         :as auth])
+    (:import  [org.joda.time DateTime]))
+
+;; Token expiries are DateTime objects, which would be useful
+;; to pass over APIs sometimes
+(extend-protocol gen/JSONable
+    DateTime
+    (to-json [dt gen]
+        (gen/write-string gen (str dt))))
 
 (defn static
     "Return a static page from resources"
@@ -28,8 +37,6 @@
                 (auth/wrap-auth
                     (routes
                         (GET "/api/tokens" req
-                            ;; TODO: delete this
-                            (log/debug (:oauth2/access-tokens req))
-                            (resp/not-found "Nothing to see here."))))
+                            (json/json-response (:oauth2/access-tokens req)))))
                 (not-found "Not Found"))
             (wrap-defaults settings))))

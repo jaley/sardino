@@ -23,5 +23,5 @@
             (if-let [session (get-in req [:oauth2/access-tokens :msa])]
                 (if (-> session graph/validate whitelisted?)
                     (handler req)
-                    (util/forbidden))
-                (util/unauthorized)))))
+                    (util/forbidden "Couldn't validate MSA ID against whitelist"))
+                (util/unauthorized "MSA sign-in required for this action")))))
