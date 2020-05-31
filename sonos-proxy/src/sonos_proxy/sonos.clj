@@ -9,7 +9,8 @@
               
               [sonos-proxy.secrets :as secrets])
 
-    (:import  [org.apache.http.impl.execchain HttpResponseProxy]))
+    (:import  [org.apache.http.impl.execchain HttpResponseProxy]
+              [org.joda.time DateTime]))
 
 ;; Seems clj-http doesn't know how to handle HttpResponseProxy?
 ;; <3 them for using a multimethod
@@ -48,8 +49,12 @@
 
 (defmethod to-expiry-dt Integer
     [duration-secs]
-    (-> (time/now) 
+    (-> (time/now)
         (time/plus (time/seconds duration-secs))))
+
+(defmethod to-expiry-dt DateTime
+    [dt]
+    dt)
 
 (defn init!
     "Initialize global token state with given credentials"
