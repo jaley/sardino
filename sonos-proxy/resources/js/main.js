@@ -1,5 +1,7 @@
 function setTokens(text) {
-    let newElem = '<div id="#tokensBlock" class="card-body"><code>' + text + '</code></div>';
+    let newElem = '<div id="#tokensBlock" class="card-body"><pre><code>' + 
+                  text + 
+                  '</code></pre></div>';
     $('#tokensBlock').replaceWith(newElem);
 }
 
@@ -8,7 +10,7 @@ function loadTokens() {
         url: '/api/tokens',
         method: 'GET',
         success: function(result) {
-            setTokens(JSON.stringify(JSON.parse(result), null, 2));
+            setTokens(JSON.stringify(result), null, 2);
             return false;
         },
         error: function(result) {
