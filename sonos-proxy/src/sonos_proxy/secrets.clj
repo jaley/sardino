@@ -6,8 +6,10 @@
     "Key Vaullt keys for required secrets"
     {:msa-client-id         "sonosProxyMsaClientId"
      :msa-client-secret     "sonosProxyMsaClientSecret"
+     :sonos-client-id       "sonosProxySonosClientId"
+     :sonos-client-secret   "sonosProxySonosClientSecret"
      :msa-user-id-whitelist "sonosProxyUserIdWhiteList" 
-     :base-uri              "sonosProxyBaseUri" })
+     :base-uri              "sonosProxyBaseUri"})
 
 (defn error
     "Complain about problems retrieving secrets"

@@ -3,6 +3,7 @@
               [compojure.route          :refer [not-found resources]]
               [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
               [ring.util.response       :as resp]
+              [ring.util.json-response  :as json]
               [taoensso.timbre          :as log]
               
               [sonos-proxy.auth         :as auth]))
@@ -26,7 +27,9 @@
                 (GET "/auth/sonos/logout" [] (not-found "[not implemented] sonos logout"))
                 (auth/wrap-auth
                     (routes
-                        (GET "/auth/sonos/login" [] (not-found "[not implemented] sonos login")
-                        (GET "/api/state" [] (not-found "[not implemented] player state")))))
+                        (GET "/api/tokens" req
+                            ;; TODO: delete this
+                            (log/debug (:oauth2/access-tokens req))
+                            (resp/not-found "Nothing to see here."))))
                 (not-found "Not Found"))
             (wrap-defaults settings))))

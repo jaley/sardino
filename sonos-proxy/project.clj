@@ -9,6 +9,7 @@
                  [ring-oauth2 "0.1.5"]
                  [ring/ring-defaults "0.3.2"]
                  [ring-logger-timbre "0.7.6"]
+                 [ring-json-response "0.2.0"]
                  [com.microsoft.graph/microsoft-graph "1.7.1"]]
   :repl-options {:init-ns sonos-proxy.core}
   
