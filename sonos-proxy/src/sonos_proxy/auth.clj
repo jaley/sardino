@@ -29,7 +29,7 @@
      :scopes           ["playback-control-all"]
      :launch-uri       "/auth/sonos/login"
      :redirect-uri     (str (secrets/get-secret :base-uri) "/auth/sonos/callback")
-     :landing-uri      "/"
+     :landing-uri      "/api/sonos-init"
      :basic-auth?      true})
 
 (defn wrap-auth

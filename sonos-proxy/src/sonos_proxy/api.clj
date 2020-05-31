@@ -7,7 +7,8 @@
               [cheshire.generate        :as gen]
               [taoensso.timbre          :as log]
               
-              [sonos-proxy.auth         :as auth])
+              [sonos-proxy.auth         :as auth]
+              [sonos-proxy.sonos        :as sonos])
     (:import  [org.joda.time DateTime]))
 
 ;; Token expiries are DateTime objects, which would be useful
@@ -39,6 +40,9 @@
                 (auth/wrap-auth
                     (routes
                         (GET "/api/tokens" req
-                            (json/json-response (:oauth2/access-tokens req)))))
+                            (json/json-response (:oauth2/access-tokens req)))
+                        (GET "/api/sonos-init" req
+                            (sonos/init! (get-in req [:oauth2/access-tokens :sonos]))
+                            (resp/redirect "/"))))
                 (not-found "Not Found"))
             (wrap-defaults settings))))
