@@ -32,8 +32,10 @@
                 (GET "/" [] (static "main.html"))
                 (resources "/css" {:root "css"})
                 (resources "/js" {:root "js"})
-                (GET "/auth/msa/logout" [] (not-found "[not implemented] msa logout"))
-                (GET "/auth/sonos/logout" [] (not-found "[not implemented] sonos logout"))
+                (GET "/auth/msa/logout" []
+                    (auth/msa-logout-response))
+                (GET "/auth/sonos/logout" []
+                    (auth/sonos-logout-response))
                 (auth/wrap-auth
                     (routes
                         (GET "/api/tokens" req

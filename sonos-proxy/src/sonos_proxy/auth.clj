@@ -1,9 +1,11 @@
 (ns sonos-proxy.auth
     (:require [ring.middleware.oauth2 :refer [wrap-oauth2]]
               [ring.middleware.params :refer [wrap-params]]
+              [ring.util.response     :as resp]
 
               [sonos-proxy.secrets    :as secrets]
-              [sonos-proxy.whitelist  :as whitelist]))
+              [sonos-proxy.whitelist  :as whitelist]
+              [sonos-proxy.sonos      :as sonos]))
 
 (defn msa-oauth2-profile
     "Build a config profile for MSA OAuth 2.0"
@@ -42,3 +44,20 @@
         (wrap-oauth2 
             {:msa (msa-oauth2-profile)})
         wrap-params))
+
+(defn msa-logout-response
+    "Generate a response to log the user out of MSA"
+    []
+    (-> "https://login.microsoftonline.com/common/oauth2/v2.0/logout"
+        (str "?post_logout_redirect_uri=" (secrets/get-secret :base-uri) "/")
+        resp/redirect
+        (update-in [:session :ring.middleware.oauth2/access-tokens] dissoc :msa)
+        (update-in [:oauth2/access-tokens] dissoc :msa)))
+
+(defn sonos-logout-response
+    "Generate a response to erase Sonos session state"
+    []
+    (sonos/logout!)
+    (-> (resp/redirect "/")
+        (update-in [:session :ring.middleware.oauth2/access-tokens] dissoc :sonos)
+        (update-in [:oauth2/access-tokens] dissoc :sonos)))
