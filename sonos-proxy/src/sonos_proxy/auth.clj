@@ -1,11 +1,12 @@
 (ns sonos-proxy.auth
-    (:require [ring.middleware.oauth2 :refer [wrap-oauth2]]
-              [ring.middleware.params :refer [wrap-params]]
-              [ring.util.response     :as resp]
+    (:require [ring.middleware.oauth2               :refer [wrap-oauth2]]
+              [ring.middleware.basic-authentication :refer [wrap-basic-authentication]]
+              [ring.middleware.params               :refer [wrap-params]]
+              [ring.util.response                   :as resp]
 
-              [sonos-proxy.secrets    :as secrets]
-              [sonos-proxy.whitelist  :as whitelist]
-              [sonos-proxy.sonos      :as sonos]))
+              [sonos-proxy.secrets                  :as secrets]
+              [sonos-proxy.whitelist                :as whitelist]
+              [sonos-proxy.sonos                    :as sonos]))
 
 (defn msa-oauth2-profile
     "Build a config profile for MSA OAuth 2.0"
@@ -32,7 +33,7 @@
      :landing-uri      "/api/sonos-init"
      :basic-auth?      true})
 
-(defn wrap-auth
+(defn wrap-oauth
     "Wrap API handler with OAuth 2.0 decorator and Email whitelist"
     [handler]
     (-> handler
@@ -61,3 +62,15 @@
     (-> (resp/redirect "/")
         (update-in [:session :ring.middleware.oauth2/access-tokens] dissoc :sonos)
         (update-in [:oauth2/access-tokens] dissoc :sonos)))
+
+(defn matches-shared-secret?
+    "Check that basic auth creds match the Arduino shared secrets"
+    [user pass]
+    (and (= user (secrets/get-secret :arduino-client-user))
+         (= pass (secrets/get-secret :arduino-client-pass))))
+
+(defn wrap-shared-secret
+    "Require basic auth credentials matching injected shared secrets
+    to access the given handler"
+    [handler]
+    (wrap-basic-authentication handler matches-shared-secret?))

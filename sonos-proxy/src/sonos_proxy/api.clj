@@ -37,7 +37,18 @@
                     (auth/msa-logout-response))
                 (GET "/auth/sonos/logout" []
                     (auth/sonos-logout-response))
-                (auth/wrap-auth
+                (auth/wrap-shared-secret
+                    (routes
+                        (GET "/api/groups" []
+                            (json/json-response
+                                (sonos/groups)))
+                        (GET "/api/:group-id/volume" [group-id]
+                            (json/json-response
+                                (sonos/get-volume group-id)))
+                        (POST "/api/:group-id/volume" [group-id volume]
+                            (json/json-response
+                                (sonos/set-volume group-id volume)))))
+                (auth/wrap-oauth
                     (routes
                         (GET "/api/tokens" req
                             (json/json-response (:oauth2/access-tokens req)))

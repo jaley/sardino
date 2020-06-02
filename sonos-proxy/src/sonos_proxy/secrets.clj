@@ -3,12 +3,14 @@
     (:require [clojure.string :as str]))
 
 (def vault-keys
-    "Key Vaullt keys for required secrets"
+    "Key Vault keys for required secrets"
     {:msa-client-id         "sonosProxyMsaClientId"
      :msa-client-secret     "sonosProxyMsaClientSecret"
      :sonos-client-id       "sonosProxySonosClientId"
      :sonos-client-secret   "sonosProxySonosClientSecret"
-     :msa-user-id-whitelist "sonosProxyUserIdWhiteList" 
+     :msa-user-id-whitelist "sonosProxyUserIdWhiteList"
+     :arduino-client-user   "sonosProxyArduinoClientUser"
+     :arduino-client-pass   "sonosProxyArduinoClientPass"
      :base-uri              "sonosProxyBaseUri"})
 
 (defn error

@@ -7,7 +7,8 @@
               [cheshire.core       :as json]
               [taoensso.timbre     :as log]
               
-              [sonos-proxy.secrets :as secrets])
+              [sonos-proxy.secrets :as secrets]
+              [sonos-proxy.util    :as util])
 
     (:import  [org.apache.http.impl.execchain HttpResponseProxy]
               [org.joda.time DateTime]))
@@ -100,7 +101,9 @@
     passed clj-http options map as params"
     [req-fn]
     (if (= @controller-state {})
-        (log/error "Attempted to execute API command before init!")
+        (do
+            (log/error "Attempted to execute API command before init!")
+            (util/forbidden "Sonos sign-in required"))
         (do
             (when (-> @controller-state :creds :expires 
                     (time/minus (time/hours 1))
