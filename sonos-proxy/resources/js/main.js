@@ -7,7 +7,7 @@ function setTokens(text) {
 
 function loadTokens() {
     $.ajax({
-        url: '/api/tokens',
+        url: '/secure/api/tokens',
         method: 'GET',
         success: function(result) {
             setTokens(JSON.stringify(result), null, 2);

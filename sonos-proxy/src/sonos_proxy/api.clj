@@ -1,5 +1,5 @@
 (ns sonos-proxy.api
-    (:require [compojure.core           :refer [routes POST GET]]
+    (:require [compojure.core           :refer [routes context POST GET]]
               [compojure.route          :refer [not-found resources]]
               [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
               [ring.util.response       :as resp]
@@ -30,30 +30,38 @@
     []
     (let [settings (-> site-defaults (assoc-in [:session :cookie-attrs :same-site] :lax))]
         (-> (routes
+                ;; public
                 (GET "/" [] (static "main.html"))
                 (resources "/css" {:root "css"})
                 (resources "/js" {:root "js"})
-                (GET "/auth/msa/logout" []
-                    (auth/msa-logout-response))
-                (GET "/auth/sonos/logout" []
-                    (auth/sonos-logout-response))
-                (auth/wrap-shared-secret
-                    (routes
-                        (GET "/api/groups" []
-                            (json/json-response
-                                (sonos/groups)))
-                        (GET "/api/:group-id/volume" [group-id]
-                            (json/json-response
-                                (sonos/get-volume group-id)))
-                        (POST "/api/:group-id/volume" [group-id volume]
-                            (json/json-response
-                                (sonos/set-volume group-id volume)))))
-                (auth/wrap-oauth
-                    (routes
-                        (GET "/api/tokens" req
-                            (json/json-response (:oauth2/access-tokens req)))
-                        (GET "/api/sonos-init" req
-                            (sonos/init! (get-in req [:oauth2/access-tokens :sonos]))
-                            (resp/redirect "/"))))
+
+                ;; requires MSA login
+                (context "/secure" []
+                    (auth/wrap-oauth
+                        (routes
+                            (GET "/auth/msa/logout" []
+                                (auth/msa-logout-response))
+                            (GET "/auth/sonos/logout" []
+                                (auth/sonos-logout-response))
+                            (GET "/api/tokens" req
+                                (json/json-response (:oauth2/access-tokens req)))
+                            (GET "/api/sonos-init" req
+                                (sonos/init! (get-in req [:oauth2/access-tokens :sonos]))
+                                (resp/redirect "/")))))
+
+                ;; requires shared secret
+                (context "/arduino" []
+                    (auth/wrap-shared-secret
+                        (routes
+                            (GET "/api/groups" []
+                                (json/json-response
+                                    (sonos/groups)))
+                            (GET "/api/:group-id/volume" [group-id]
+                                (json/json-response
+                                    (sonos/get-volume group-id)))
+                            (POST "/api/:group-id/volume" [group-id volume]
+                                (json/json-response
+                                    (sonos/set-volume group-id volume))))))
+                
                 (not-found "Not Found"))
             (wrap-defaults settings))))

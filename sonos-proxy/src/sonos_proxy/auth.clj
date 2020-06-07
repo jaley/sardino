@@ -16,8 +16,8 @@
      :client-id        (secrets/get-secret :msa-client-id)
      :client-secret    (secrets/get-secret :msa-client-secret)
      :scopes           ["https://graph.microsoft.com/user.read"]
-     :launch-uri       "/auth/msa/login"
-     :redirect-uri     (str (secrets/get-secret :base-uri) "/auth/msa/callback")
+     :launch-uri       "/secure/auth/msa/login"
+     :redirect-uri     (str (secrets/get-secret :base-uri) "/secure/auth/msa/callback")
      :landing-uri      "/"})
 
 (defn sonos-oauth2-profile
@@ -28,9 +28,9 @@
      :client-id        (secrets/get-secret :sonos-client-id)
      :client-secret    (secrets/get-secret :sonos-client-secret)
      :scopes           ["playback-control-all"]
-     :launch-uri       "/auth/sonos/login"
-     :redirect-uri     (str (secrets/get-secret :base-uri) "/auth/sonos/callback")
-     :landing-uri      "/api/sonos-init"
+     :launch-uri       "/secure/auth/sonos/login"
+     :redirect-uri     (str (secrets/get-secret :base-uri) "/secure/auth/sonos/callback")
+     :landing-uri      "/secure/api/sonos-init"
      :basic-auth?      true})
 
 (defn wrap-oauth
