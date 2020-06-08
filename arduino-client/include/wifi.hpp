@@ -4,31 +4,33 @@
 #include <Arduino.h>
 #include <WiFiNINA.h>
 
-namespace ArduinoClient
+#include "common.hpp"
+
+namespace ArduinoClient {
+
+class Wifi : public Component
 {
+public:
+    Wifi(const String& ssid, const String& secret)
+    : Component("Wifi"), m_ssid(ssid), m_secret(secret) {};
+    ~Wifi() {};
 
-    class Wifi
-    {
-    public:
-        Wifi(const String& ssid, const String& secret)
-        : m_ssid(ssid), m_secret(secret) {};
-        ~Wifi() {};
+    // Connects to WiFi and blocks until connected
+    void connectAndWait();
 
-        // Connects to WiFi and blocks until connected
-        void connectAndWait();
+    // Get a reference to the NINA client
+    inline WiFiClient& client() {
+        return m_wifi;
+    }
 
-        // Get a reference to the NINA client
-        inline WiFiClient& client() {
-            return m_wifi;
-        }
+private:
+    const String& m_ssid;
+    const String& m_secret;
 
-    private:
-        const String& m_ssid;
-        const String& m_secret;
-
-        WiFiClient m_wifi;
-    };
-
+    WiFiClient m_wifi;
 };
+
+
+}; // namespace ArduinoClient
 
 #endif // WIFI_H
