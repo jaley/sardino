@@ -2,6 +2,7 @@
 
 #include "secrets.h"
 #include "wifi.hpp"
+#include "web.hpp"
 
 ArduinoClient::Wifi WIFI(
     ArduinoClient::Secrets::WIFI_SSID, 
@@ -19,6 +20,15 @@ void setup()
 
 void loop()
 {
-    Serial.println("idle...");
+    ArduinoClient::Web web(
+        WIFI.client(),
+        ArduinoClient::Secrets::PROXY_HOSTNAME,
+        ArduinoClient::Secrets::PROXY_AUTH_USER,
+        ArduinoClient::Secrets::PROXY_AUTH_PASS
+    );
+
+    web.get("/arduino/api/groups");
+
+    Serial.println("looping...");
     delay(10000);
 }

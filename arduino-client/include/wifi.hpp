@@ -19,7 +19,7 @@ public:
     void connectAndWait();
 
     // Get a reference to the NINA client
-    inline WiFiClient& client() {
+    inline WiFiSSLClient& client() {
         return m_wifi;
     }
 
@@ -27,7 +27,7 @@ private:
     const String& m_ssid;
     const String& m_secret;
 
-    WiFiClient m_wifi;
+    WiFiSSLClient m_wifi;
 };
 
 
