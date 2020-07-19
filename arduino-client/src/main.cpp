@@ -1,6 +1,7 @@
-#include <Arduino.h>
+#include "common.hpp"
 
 #include "secrets.h"
+#include "sonos.hpp"
 #include "wifi.hpp"
 #include "web.hpp"
 
@@ -27,7 +28,12 @@ void loop()
         ArduinoClient::Secrets::PROXY_AUTH_PASS
     );
 
-    web.get("/arduino/api/groups");
+    ArduinoClient::Sonos sonos(web);
+
+    ArduinoClient::Group groups[5] = {}; 
+    sonos.getGroups(groups, 5);
+
+    Serial.println(String("Got groups: ") + groups[0].m_groupName);
 
     Serial.println("looping...");
     delay(10000);

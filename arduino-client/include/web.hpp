@@ -1,13 +1,19 @@
 #ifndef WEB_H
 #define WEB_H
 
+#include "common.hpp"
+
 #include <HttpClient.h>
 
-#include "common.hpp"
 
 namespace ArduinoClient {
 
 const uint16_t HTTPS_PORT = 443;
+
+struct KeywordParam {
+    String parameter;
+    String value;
+};
 
 class Web : public Component
 {
@@ -17,7 +23,10 @@ public:
         m_user(user), m_password(password) {}
     ~Web() {}
 
-    void get(const String& path);
+    String get(const String& path);
+
+    // TODO: implement this
+    String post(const String& path, KeywordParam const* params, size_t numParams);
 
 private:
     HttpClient m_httpClient;

@@ -1,3 +1,4 @@
+#include "common.hpp"
 #include "wifi.hpp"
 
 #include <SPI.h>
@@ -13,6 +14,7 @@ void Wifi::connectAndWait()
     {
         status = WiFi.begin(m_ssid.c_str(), m_secret.c_str());
         delay(250);
+        info(String("status = ") + status);
     }
     info("connected!");
 

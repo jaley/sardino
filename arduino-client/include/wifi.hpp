@@ -1,10 +1,10 @@
 #ifndef WIFI_H
 #define WIFI_H
 
-#include <Arduino.h>
+#include "common.hpp"
+
 #include <WiFiNINA.h>
 
-#include "common.hpp"
 
 namespace ArduinoClient {
 

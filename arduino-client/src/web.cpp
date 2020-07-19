@@ -1,8 +1,9 @@
+#include "common.hpp"
 #include "web.hpp"
 
 namespace ArduinoClient {
 
-void Web::get(const String& path)
+String Web::get(const String& path)
 {
     info("GET " + path);
 
@@ -11,8 +12,23 @@ void Web::get(const String& path)
     m_httpClient.sendBasicAuth(m_user, m_password);
     m_httpClient.endRequest();
 
-    info(String("Response: ") + m_httpClient.responseStatusCode() + 
-         String(" - ") + m_httpClient.responseBody());
+    const int status = m_httpClient.responseStatusCode();
+    const String body = m_httpClient.responseBody();
+
+    info(String("Response: ") + status);
+    if (status != 200)
+    {
+        error("Proxy service returned bad status: " + body);
+        return String();
+    }
+    
+    return body;
 }
+
+String Web::post(const String& path, KeywordParam const* params, size_t numParams)
+{
+    return String("TODO");
+}
+
 
 } // namespace ArduinoClient

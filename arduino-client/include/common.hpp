@@ -3,6 +3,10 @@
 
 #include <Arduino.h>
 
+// Arduino.h redefines STL symbols... Worst
+#undef max
+#undef min
+
 namespace ArduinoClient {
 
 class Component {
