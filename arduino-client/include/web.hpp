@@ -10,9 +10,15 @@ namespace ArduinoClient {
 
 const uint16_t HTTPS_PORT = 443;
 
-struct KeywordParam {
-    String parameter;
-    String value;
+class KeywordParam {
+public:
+    KeywordParam(String key, String val)
+    : parameter(key), value(val) {}
+    ~KeywordParam() {}
+
+public:
+    const String parameter;
+    const String value;
 };
 
 class Web : public Component

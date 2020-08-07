@@ -22,12 +22,10 @@ size_t Sonos::getGroups(Group* out, size_t numGroupsLimit)
     DynamicJsonDocument doc(groupListSize);
     deserializeJson(doc, groupsList.c_str());
 
-    info("Unpacking JSON...");
-
     const size_t numGroupsReturned(doc.size());
     for(uint32_t i(0); i < numGroupsReturned; ++i)
     {
-        JsonObject group = doc[i];
+        const JsonObject group = doc[i];
         const char* groupId = group["group-id"];
         const char* groupName = group["group-name"];
 
@@ -43,13 +41,31 @@ size_t Sonos::getGroups(Group* out, size_t numGroupsLimit)
 uint8_t Sonos::getVolume(const String& groupId)
 {
     info(String("Getting volume for group: ") + groupId);
-    return 0;
+    const String volumeResponse = m_client.get(
+        String("/arduino/api/") + groupId + String("/volume")
+    );
+
+    const size_t capacity = JSON_OBJECT_SIZE(3) + 30;
+
+    DynamicJsonDocument doc(capacity);
+    deserializeJson(doc, volumeResponse);
+
+    uint8_t vol(0);
+    if(doc.containsKey("volume")) {
+        vol = doc["volume"];
+    }
+
+    return vol;
 }
 
 void Sonos::setVolume(const String& groupId, uint8_t volume)
 {
     info(String("Setting volume for group ") + groupId + 
          String(" to level: ") + volume);
+    
+    const size_t numParams(1);
+    KeywordParam params[numParams] = { KeywordParam("volume", String(volume)) };
+    m_client.post("/arduino/api/volume", params, numParams);
 }
 
 
