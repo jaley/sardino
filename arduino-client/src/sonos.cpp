@@ -51,7 +51,8 @@ uint8_t Sonos::getVolume(const String& groupId)
     deserializeJson(doc, volumeResponse);
 
     uint8_t vol(0);
-    if(doc.containsKey("volume")) {
+    if(doc.containsKey("volume"))
+    {
         vol = doc["volume"];
     }
 

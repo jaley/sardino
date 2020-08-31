@@ -4,11 +4,20 @@
 #include "sonos.hpp"
 #include "wifi.hpp"
 #include "web.hpp"
+#include "volume.hpp"
 
-ArduinoClient::Wifi WIFI(
+using namespace ArduinoClient;
+
+
+Wifi WIFI(
     ArduinoClient::Secrets::WIFI_SSID, 
     ArduinoClient::Secrets::WIFI_SECRET_KEY
 );
+
+const byte ROTARY_ENCODER_INTERRUPT_PIN_A(0);
+const byte ROTARY_ENCODER_INTERRUPT_PIN_B(1);
+Volume VOLUME(ROTARY_ENCODER_INTERRUPT_PIN_A, ROTARY_ENCODER_INTERRUPT_PIN_B);
+
 
 void setup()
 {
@@ -19,22 +28,36 @@ void setup()
     WIFI.connectAndWait();
 }
 
-void loop()
+void testWeb()
 {
-    ArduinoClient::Web web(
+   Web web(
         WIFI.client(),
-        ArduinoClient::Secrets::PROXY_HOSTNAME,
-        ArduinoClient::Secrets::PROXY_AUTH_USER,
-        ArduinoClient::Secrets::PROXY_AUTH_PASS
+        Secrets::PROXY_HOSTNAME,
+        Secrets::PROXY_AUTH_USER,
+        Secrets::PROXY_AUTH_PASS
     );
 
-    ArduinoClient::Sonos sonos(web);
+    Sonos sonos(web);
 
-    ArduinoClient::Group groups[5] = {}; 
+    Group groups[5] = {}; 
     sonos.getGroups(groups, 5);
 
     Serial.println(String("Got groups: ") + groups[0].m_groupName);
-
-    Serial.println("looping...");
-    delay(10000);
 }
+
+void testEncoder()
+{
+    VOLUME.read();
+    // Serial.println("Volume Change: " + String(VOLUME.read()));
+}
+
+void loop()
+{
+    // testWeb();
+
+    testEncoder();
+
+    // Serial.println("looping...");
+    // delay(10000);
+}
+
