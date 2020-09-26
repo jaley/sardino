@@ -54,10 +54,9 @@ void testEncoder()
 void loop()
 {
     // testWeb();
+    // testEncoder();
 
-    testEncoder();
-
-    // Serial.println("looping...");
-    // delay(10000);
+    Serial.println("looping...");
+    delay(10000);
 }
 
