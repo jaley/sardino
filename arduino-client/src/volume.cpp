@@ -2,6 +2,14 @@
 
 namespace ArduinoClient {
 
+// TODO: Make a better smoothing function for encoder deltas
+const float DELTA_SMOOTHING = 0.5f;
+
+int32_t smooth(int32_t delta)
+{
+    return (int32_t) delta * DELTA_SMOOTHING;
+}
+
 int32_t Volume::read()
 {
     // Get encoder state
@@ -15,7 +23,7 @@ int32_t Volume::read()
         m_position = newPosition;
     }
 
-    return delta;
+    return smooth(delta);
 }
 
 } // namespace ArduinoClient

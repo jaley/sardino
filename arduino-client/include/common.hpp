@@ -69,9 +69,26 @@ public:
 
 private:
     String m_currentRoom;
-    uint32_t m_volume;
+    int32_t m_volume;
     boolean m_updatingNow;
 };
+
+/**
+ * Clamp a given value between minimum and maximum values.
+ */
+inline uint32_t clamp(int32_t minVal, int32_t val, int32_t maxVal)
+{
+    if (val < minVal)
+    {
+        return minVal;
+    }
+    else if (val > maxVal)
+    {
+        return maxVal;
+    }
+
+    return val;
+}
 
 } // namespace ArduinoClient
 

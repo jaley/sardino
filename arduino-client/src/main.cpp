@@ -59,7 +59,8 @@ void testWeb()
 
 void testEncoder()
 {
-    Serial.println("Volume Change: " + String(VOLUME.read()));
+    uint32_t newVolume = clamp(0, STATE.volume() + VOLUME.read(), 100);
+    STATE.setVolume(newVolume);
 }
 
 void testUi()
@@ -72,10 +73,9 @@ void testUi()
 void loop()
 {
     // testWeb();
-    // testEncoder();
+    testEncoder();
     testUi();
 
-    Serial.println("looping...");
-    delay(10000);
+    // delay(10);
 }
 
