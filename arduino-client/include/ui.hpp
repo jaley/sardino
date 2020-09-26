@@ -37,6 +37,19 @@ private:
 // WiFi connecting wait screen
 const FullScreenMessage CONNECTING("Connecting", "Please wait...");
 
+class ControllerStateDrawable : public IDrawable
+{
+public:
+    ControllerStateDrawable(const ControllerState &state)
+    : m_state(state) {}
+
+    void draw(U8G2 &display) const;
+
+private:
+    const ControllerState m_state;
+};
+
+
 /**
  * Holds current UI state and redraws when called by main loop
  */
@@ -44,7 +57,7 @@ class Ui : public Component
 {
 public:
     Ui(U8G2 &display)
-    : Component("UI"), m_display(display), m_state(&CONNECTING) {}
+    : Component("UI"), m_state(&CONNECTING), m_display(display) {}
     ~Ui() {}
 
     void setDrawable(const IDrawable *state);

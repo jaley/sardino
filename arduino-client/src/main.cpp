@@ -24,6 +24,8 @@ Volume VOLUME(ROTARY_ENCODER_INTERRUPT_PIN_A, ROTARY_ENCODER_INTERRUPT_PIN_B);
 U8G2_SH1107_PIMORONI_128X128_F_4W_HW_SPI U8G2_DISPLAY(U8G2_R0, A1, A2, U8X8_PIN_NONE);
 Ui UI(U8G2_DISPLAY);
 
+// Controller state (room, volume, etc)
+ControllerState STATE("Snug", 32, false);
 
 void setup()
 {
@@ -62,6 +64,8 @@ void testEncoder()
 
 void testUi()
 {
+    const ControllerStateDrawable stateDrawable = ControllerStateDrawable(STATE);
+    UI.setDrawable(&stateDrawable);
     UI.redraw();
 }
 
