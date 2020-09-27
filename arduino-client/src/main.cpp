@@ -1,11 +1,14 @@
 #include "common.hpp"
 
+// Not checked in - provides ArduinoClient::Secrets
 #include "secrets.h"
+
 #include "sonos.hpp"
-#include "wifi.hpp"
-#include "web.hpp"
-#include "volume.hpp"
+#include "state.hpp"
 #include "ui.hpp"
+#include "volume.hpp"
+#include "web.hpp"
+#include "wifi.hpp"
 
 using namespace ArduinoClient;
 
@@ -24,8 +27,35 @@ Volume VOLUME(ROTARY_ENCODER_INTERRUPT_PIN_A, ROTARY_ENCODER_INTERRUPT_PIN_B);
 U8G2_SH1107_PIMORONI_128X128_F_4W_HW_SPI U8G2_DISPLAY(U8G2_R0, A1, A2, U8X8_PIN_NONE);
 Ui UI(U8G2_DISPLAY);
 
-// Controller state (room, volume, etc)
-ControllerState STATE("Snug", 32, false);
+// System state
+Web WEB(
+    WIFI.client(),
+    Secrets::PROXY_HOSTNAME,
+    Secrets::PROXY_AUTH_USER,
+    Secrets::PROXY_AUTH_PASS
+);
+Sonos SONOS(WEB);
+SystemState STATE(SONOS);
+
+/**
+ * Helper to render a status message on the display
+ */
+void message(String title, String msg)
+{
+    const FullScreenMessage message(title, msg);
+    UI.setDrawable(&message);
+    UI.redraw();
+}
+
+/**
+ * Read current system state and redraw UI to reflect that
+ */
+void redraw()
+{
+    const ControllerStateDrawable newState(STATE.activeRoom());
+    UI.setDrawable(&newState);
+    UI.redraw();
+}
 
 void setup()
 {
@@ -34,10 +64,17 @@ void setup()
     while (!Serial);
 
     U8G2_DISPLAY.begin();
-    UI.setDrawable(&CONNECTING);
-    UI.redraw();
 
+    // Connect to WiFi
+    message("Connecting", "WiFi...");
     WIFI.connectAndWait();
+
+    // Retrieve current room listings
+    message("Connecting", "Sonos...");
+    STATE.refresh();
+
+    // Render home state
+    redraw();   
 }
 
 void testWeb()
@@ -52,30 +89,22 @@ void testWeb()
     Sonos sonos(web);
 
     Group groups[5] = {}; 
-    sonos.getGroups(groups, 5);
+    // sonos.getGroups(groups, 5);
 
     Serial.println(String("Got groups: ") + groups[0].m_groupName);
 }
 
 void testEncoder()
 {
-    uint32_t newVolume = clamp(0, STATE.volume() + VOLUME.read(), 100);
-    STATE.setVolume(newVolume);
-}
-
-void testUi()
-{
-    const ControllerStateDrawable stateDrawable = ControllerStateDrawable(STATE);
-    UI.setDrawable(&stateDrawable);
-    UI.redraw();
+    uint32_t newVolume = clamp(0, STATE.activeRoom().volume() + VOLUME.read(), 100);
+    STATE.activeRoom().setVolume(newVolume);
 }
 
 void loop()
 {
     // testWeb();
     testEncoder();
-    testUi();
+    redraw();
 
     // delay(10);
 }
-

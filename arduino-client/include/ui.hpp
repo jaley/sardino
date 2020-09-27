@@ -2,6 +2,7 @@
 #define UI_H
 
 #include "common.hpp"
+#include "state.hpp"
 
 #include <U8g2lib.h>
 #include <SPI.h>
@@ -34,21 +35,20 @@ private:
     String m_message;
 };
 
-// WiFi connecting wait screen
-const FullScreenMessage CONNECTING("Connecting", "Please wait...");
-
 class ControllerStateDrawable : public IDrawable
 {
 public:
-    ControllerStateDrawable(const ControllerState &state)
+    ControllerStateDrawable(const RoomState &state)
     : m_state(state) {}
 
     void draw(U8G2 &display) const;
 
 private:
-    const ControllerState m_state;
+    const RoomState m_state;
 };
 
+// Unused drawable state
+const FullScreenMessage BLANK("", "");
 
 /**
  * Holds current UI state and redraws when called by main loop
@@ -57,7 +57,7 @@ class Ui : public Component
 {
 public:
     Ui(U8G2 &display)
-    : Component("UI"), m_state(&CONNECTING), m_display(display) {}
+    : Component("UI"), m_state(&BLANK), m_display(display) {}
     ~Ui() {}
 
     void setDrawable(const IDrawable *state);

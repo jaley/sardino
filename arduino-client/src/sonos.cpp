@@ -6,7 +6,7 @@
 namespace ArduinoClient {
 
 
-size_t Sonos::getGroups(Group* out, size_t numGroupsLimit)
+size_t Sonos::getGroups(std::array<Group, MAX_SONOS_ROOMS> &out)
 {
     info("Getting groups listing");
     const String groupsList = m_client.get("/arduino/api/groups");
@@ -15,9 +15,9 @@ size_t Sonos::getGroups(Group* out, size_t numGroupsLimit)
     const uint16_t groupSize(150);
 
     const size_t groupListSize = 
-        JSON_ARRAY_SIZE(numGroupsLimit) + 
-        numGroupsLimit * JSON_OBJECT_SIZE(numFieldsPerGroup) + 
-        numGroupsLimit * groupSize;
+        JSON_ARRAY_SIZE(MAX_SONOS_ROOMS) + 
+        MAX_SONOS_ROOMS * JSON_OBJECT_SIZE(numFieldsPerGroup) + 
+        MAX_SONOS_ROOMS * groupSize;
 
     DynamicJsonDocument doc(groupListSize);
     deserializeJson(doc, groupsList.c_str());
@@ -29,9 +29,8 @@ size_t Sonos::getGroups(Group* out, size_t numGroupsLimit)
         const char* groupId = group["group-id"];
         const char* groupName = group["group-name"];
 
-        out->m_groupId = String(groupId);
-        out->m_groupName = String(groupName);
-        ++out;
+        out[i].m_groupId = String(groupId);
+        out[i].m_groupName = String(groupName);
     }
 
     info(String("Returned group list size: ") + numGroupsReturned);

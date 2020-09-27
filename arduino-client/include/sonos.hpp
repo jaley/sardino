@@ -4,6 +4,8 @@
 #include "common.hpp"
 #include "web.hpp"
 
+#include <array>
+
 namespace ArduinoClient {
 
 struct Group {
@@ -18,7 +20,7 @@ public:
     : Component("Sonos"), m_client(client) {}
     ~Sonos() {}
 
-    size_t getGroups(Group* out, size_t numGroups);
+    size_t getGroups(std::array<Group, MAX_SONOS_ROOMS> &out);
     uint8_t getVolume(const String& groupId);
     void setVolume(const String& groupId, uint8_t volume);
 

@@ -28,52 +28,6 @@ private:
 };
 
 /**
- * Controller state, shared among components.
- */
-class ControllerState
-{
-public:
-    ControllerState(String room, uint32_t volume, boolean updating)
-    : m_currentRoom(room), m_volume(volume), m_updatingNow(updating) {}
-    ~ControllerState() {}
-
-    inline void setCurrentRoom(String room)
-    {
-        m_currentRoom = room;
-    }
-
-    inline void setVolume(uint32_t volume)
-    {
-        m_volume = volume;
-    }
-
-    inline void setUpdatingNow(boolean updating)
-    {
-        m_updatingNow = updating;
-    }
-
-    inline String currentRoom() const
-    {
-        return m_currentRoom;
-    }
-
-    inline uint32_t volume() const
-    {
-        return m_volume;
-    }
-
-    inline boolean isUpdating() const
-    {
-        return m_updatingNow;
-    }
-
-private:
-    String m_currentRoom;
-    int32_t m_volume;
-    boolean m_updatingNow;
-};
-
-/**
  * Clamp a given value between minimum and maximum values.
  */
 inline uint32_t clamp(int32_t minVal, int32_t val, int32_t maxVal)
@@ -89,6 +43,11 @@ inline uint32_t clamp(int32_t minVal, int32_t val, int32_t maxVal)
 
     return val;
 }
+
+// Fixing the maximum number of rooms we support globally, to avoid
+// need for dynamic allocation
+const size_t MAX_SONOS_ROOMS(5);
+
 
 } // namespace ArduinoClient
 
