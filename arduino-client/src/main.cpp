@@ -1,5 +1,7 @@
 #include "common.hpp"
 
+#include <Bounce2.h>
+
 // Not checked in - provides ArduinoClient::Secrets
 #include "secrets.h"
 
@@ -22,6 +24,9 @@ Wifi WIFI(
 const byte ROTARY_ENCODER_INTERRUPT_PIN_A(0);
 const byte ROTARY_ENCODER_INTERRUPT_PIN_B(1);
 Volume VOLUME(ROTARY_ENCODER_INTERRUPT_PIN_A, ROTARY_ENCODER_INTERRUPT_PIN_B);
+
+// Room change control
+Button ROOM_TOGGLE = Button();
 
 // Display
 U8G2_SH1107_PIMORONI_128X128_F_4W_HW_SPI U8G2_DISPLAY(U8G2_R0, A1, A2, U8X8_PIN_NONE);
@@ -73,8 +78,13 @@ void setup()
     message("Connecting", "Sonos...");
     STATE.refresh();
 
+    // Connect room toggle button
+    ROOM_TOGGLE.attach(A3, INPUT_PULLUP);
+    ROOM_TOGGLE.interval(2);
+    ROOM_TOGGLE.setPressedState(LOW);
+
     // Render home state
-    redraw();   
+    redraw();
 }
 
 void testWeb()
@@ -102,6 +112,13 @@ void testEncoder()
 
 void loop()
 {
+    // Update room control if button pressed
+    ROOM_TOGGLE.update();
+    if(ROOM_TOGGLE.pressed())
+    {
+        STATE.nextRoom();
+    }
+
     // testWeb();
     testEncoder();
     redraw();
