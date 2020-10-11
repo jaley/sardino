@@ -14,22 +14,6 @@ const uint32_t MAX_POST_PARAMS(1);
 
 const uint16_t HTTPS_PORT = 443;
 
-class KeywordParam {
-public:
-    KeywordParam(String key, String val)
-    : parameter(key), value(val) {}
-    ~KeywordParam() {}
-
-    inline String asFormData() const
-    {
-        return parameter + String("=") + value;
-    }
-
-public:
-    const String parameter;
-    const String value;
-};
-
 class Web : public Component
 {
 public:
