@@ -44,6 +44,9 @@ public:
     void draw(U8G2 &display) const;
 
 private:
+    void spinner(U8G2 &display) const;
+
+private:
     const RoomState m_state;
 };
 

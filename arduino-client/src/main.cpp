@@ -116,6 +116,7 @@ void loop()
         uint64_t elapsed = millis() - STATE.activeRoom().lastModified();
         if (elapsed >= ENCODER_DEBOUNCE_MS)
         {
+            message("Applying", "Vol. Change");
             STATE.apply();
         }
     }
