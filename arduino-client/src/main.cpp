@@ -25,6 +25,8 @@ const byte ROTARY_ENCODER_INTERRUPT_PIN_A(0);
 const byte ROTARY_ENCODER_INTERRUPT_PIN_B(1);
 Volume VOLUME(ROTARY_ENCODER_INTERRUPT_PIN_A, ROTARY_ENCODER_INTERRUPT_PIN_B);
 
+const uint64_t ENCODER_DEBOUNCE_MS = 2000;
+
 // Room change control
 Button ROOM_TOGGLE = Button();
 
@@ -87,41 +89,35 @@ void setup()
     redraw();
 }
 
-void testWeb()
+void updateVolume()
 {
-   Web web(
-        WIFI.client(),
-        Secrets::PROXY_HOSTNAME,
-        Secrets::PROXY_AUTH_USER,
-        Secrets::PROXY_AUTH_PASS
-    );
-
-    Sonos sonos(web);
-
-    Group groups[5] = {}; 
-    // sonos.getGroups(groups, 5);
-
-    Serial.println(String("Got groups: ") + groups[0].m_groupName);
-}
-
-void testEncoder()
-{
-    uint32_t newVolume = clamp(0, STATE.activeRoom().volume() + VOLUME.read(), 100);
-    STATE.activeRoom().setVolume(newVolume);
+    int32_t delta = VOLUME.read();
+    if (delta != 0)
+    {
+        uint32_t newVolume = clamp(0, STATE.activeRoom().volume() + delta, 100);
+        STATE.activeRoom().setVolume(newVolume);
+    }
 }
 
 void loop()
 {
     // Update room control if button pressed
     ROOM_TOGGLE.update();
-    if(ROOM_TOGGLE.pressed())
+    if (ROOM_TOGGLE.pressed())
     {
         STATE.nextRoom();
     }
 
-    // testWeb();
-    testEncoder();
-    redraw();
+    // Check to see if volume updates need to be applied
+    updateVolume();
+    if (STATE.activeRoom().isModified())
+    {
+        uint64_t elapsed = millis() - STATE.activeRoom().lastModified();
+        if (elapsed >= ENCODER_DEBOUNCE_MS)
+        {
+            STATE.apply();
+        }
+    }
 
-    // delay(10);
+    redraw();
 }

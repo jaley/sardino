@@ -28,7 +28,9 @@
 (defn build-routes
     "Compose routes and apply global settings"
     []
-    (let [settings (-> site-defaults (assoc-in [:session :cookie-attrs :same-site] :lax))]
+    (let [settings (-> site-defaults 
+                       (assoc-in [:session :cookie-attrs :same-site] :lax)
+                       (assoc-in [:security :anti-forgery] false))]
         (-> (routes
                 ;; public
                 (GET "/" [] (static "main.html"))

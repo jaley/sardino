@@ -69,6 +69,7 @@ void SystemState::apply()
 {
     info("Applying volume changes for room: " + m_activeRoom.group().m_groupName);
     m_sonos.setVolume(m_activeRoom.group().m_groupId, m_activeRoom.volume());
+    m_activeRoom.commit();
 }
 
 RoomState& SystemState::activeRoom()

@@ -3,10 +3,14 @@
 
 #include "common.hpp"
 
+#include<array>
 #include <HttpClient.h>
 
 
 namespace ArduinoClient {
+
+// TODO: Increase this?
+const uint32_t MAX_POST_PARAMS(1);
 
 const uint16_t HTTPS_PORT = 443;
 
@@ -15,6 +19,11 @@ public:
     KeywordParam(String key, String val)
     : parameter(key), value(val) {}
     ~KeywordParam() {}
+
+    inline String asFormData() const
+    {
+        return parameter + String("=") + value;
+    }
 
 public:
     const String parameter;
@@ -30,9 +39,10 @@ public:
     ~Web() {}
 
     String get(const String& path);
+    String post(const String& path, const String& body);
 
-    // TODO: implement this
-    String post(const String& path, KeywordParam const* params, size_t numParams);
+private:
+    String checkResponse();
 
 private:
     HttpClient m_httpClient;

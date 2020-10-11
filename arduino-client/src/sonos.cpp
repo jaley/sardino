@@ -60,12 +60,10 @@ uint8_t Sonos::getVolume(const String& groupId)
 
 void Sonos::setVolume(const String& groupId, uint8_t volume)
 {
-    info(String("Setting volume for group ") + groupId + 
-         String(" to level: ") + volume);
-    
-    const size_t numParams(1);
-    KeywordParam params[numParams] = { KeywordParam("volume", String(volume)) };
-    m_client.post("/arduino/api/volume", params, numParams);
+    info(String("Setting volume for group ") + groupId);
+
+    String body = String("volume=") + volume;
+    m_client.post(String("/arduino/api/") + groupId + String("/volume"), body);
 }
 
 
