@@ -105,6 +105,7 @@ void loop()
     ROOM_TOGGLE.update();
     if (ROOM_TOGGLE.pressed())
     {
+        message("Loading", "Next Room");
         STATE.nextRoom();
     }
 
